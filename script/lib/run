@@ -1,0 +1,6 @@
+#!/usr/bin/env php
+<?php
+
+define('ENVIRONMENT', 'dev');
+
+require __DIR__ . "/../../bootstrap/start_cli.php";

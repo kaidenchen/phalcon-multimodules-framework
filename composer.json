@@ -1,0 +1,13 @@
+{	
+	"name": "phalcon/API",
+	"description": "",
+	"keywords": ["api", "user"],
+	"license": "proprietary",
+	"forum": "ttyun.com",
+    "require": {
+        "monolog/monolog": "1.0.*",
+		"predis/predis": "~1.0",
+		"phpmailer/phpmailer": "~5.2"
+	
+    }
+}
