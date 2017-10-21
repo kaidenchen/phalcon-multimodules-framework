@@ -17,6 +17,7 @@ return new \Phalcon\Config([
     'application' => [
         'appDir'         => APP_PATH . '/',
         'modelsDir'      => APP_PATH . '/base/models/',
+        'LibarayDir'      => APP_PATH . '/base/library/',
         'migrationsDir'  => APP_PATH . '/migrations/',
         'cacheDir'       => BASE_PATH . '/data/cache/',
         'baseUri'        => '/'
@@ -26,8 +27,9 @@ return new \Phalcon\Config([
      * 自动注册service到di中
      */
     'services' => [
-        'utils' => 'App\Library\Utils',
-        'arr' => 'App\Library\Arr',
+        'utils' => 'App\Base\Library\Utils',
+        'arr' => 'App\Base\Library\Arr',
+        'rspJson' => 'App\Base\Library\RspJson',
     ],
 
 
@@ -41,5 +43,7 @@ return new \Phalcon\Config([
      * You can disable this behaviour if the output of your application needs to don't have a new line at end
      */
     'printNewLine' => true,
+
+    'apiKeyList' => [ '123', 'abc' ],
 
 ]);

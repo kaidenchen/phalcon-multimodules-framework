@@ -19,10 +19,6 @@ try {
      */
     require BOOTSTRAP_SYSTEM_PATH . '/services.php';
 
-    /**
-     * Include web environment specific services
-     */
-    require BOOTSTRAP_SYSTEM_PATH . '/api/services_api.php';
 
     /**
      * Get config service for use in inline setup below
@@ -41,6 +37,11 @@ try {
      * Include Phalcon Autoloader
      */
     include BOOTSTRAP_PATH . '/loader.php';
+
+    /**
+     * Include web environment specific services
+     */
+    require BOOTSTRAP_SYSTEM_PATH . '/api/services_api.php';
 
     /**
      * Handle the request
@@ -65,6 +66,19 @@ try {
     echo $application->handle()->getContent();
 
 } catch (\Exception $e) {
-    echo $e->getMessage() . '<br>';
-    echo '<pre>' . $e->getTraceAsString() . '</pre>';
+    header("content-type:application/json;charset=utf-8");
+    $msg = $e->getMessage();
+    if ( isset($di['logger']) )  {
+        $di->getLogger('EXCEPTION')->log(json_encode($msg));
+        $di->getLogger('EXCEPTION')->log('GET: '. json_encode($_GET));
+        $di->getLogger('EXCEPTION')->log('POST: '. json_encode($_POST));
+    }
+    $result = [ 'ret' => "500", 'data' => [] , 'msg' => 'HTTP/1.1 500 Internal Server Error' ];
+    echo json_encode($result);
+
+    if ( isset($di['config']['exceptionDebug']) && $di['config']['exceptionDebug'] ) {
+        error_log($e->getMessage());
+        error_log($e->getTraceAsString());
+    }
+
 }

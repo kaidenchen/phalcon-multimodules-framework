@@ -10,8 +10,10 @@ $loader = new Loader();
  * Register Namespaces
  */
 $loader->registerNamespaces([
-    'App\Models' => APP_PATH . '/base/models/',
-    'App\Library' => APP_PATH . '/base/library/',
+    'App\Base\Models' => APP_PATH . '/base/models/',
+    'App\Base\Library' => APP_PATH . '/base/library/',
+    'App\Base\Middleware' => APP_PATH . '/base/middleware/',
+    'App\Base\Plugins' => APP_PATH . '/base/plugins/',
     'App' => APP_PATH . '/base/',
 ]);
 

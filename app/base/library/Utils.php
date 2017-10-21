@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library;
+namespace App\Base\Library;
 
 class Utils 
 {
@@ -45,5 +45,85 @@ class Utils
         die;                           
     }                                  
 
+    /**
+     * @brief curlGet 
+     *
+     * @param $url
+     * @param $params
+     *
+     * @return 
+     */
+    public function curlGet($url, $params=[], $headers=[]) 
+    {
+        if ( !is_array($params) ) return false;
+        $curl = new \Curl\Curl();
+        if ( !empty($headers) ) {
+            foreach($headers as $key=>$val) $curl->setHeader($key, $val);
+        }
+        $curl->get($url, $params);
+        if ($curl->error) {
+            $curl->error_code;
+            $msg = sprintf("GET curl %s failed, error_code: %s, params : %s, Request Headers: %s", $url, $curl->error_code, json_encode($params), json_encode($curl->request_headers));
+            $this->getDI()->getLogger('CLI_CURL_ERROR')->log($msg);
+        } else {
+            $body = $curl->response;
+            $msg = sprintf("POST %s SUCCESSED, params : %s,  response: %s,  Request Headers: %s, Response Headers: %s", $url, json_encode($params), $body, json_encode($curl->request_headers), json_encode($curl->response_headers));
+            $this->getDI()->getLogger('CLI_CURL_DEBUG')->log($msg);
+        }
+        $curl->close();
+        return isset($body) ? $body : false;
+    }
+
+    /**
+     * @brief post 
+     *
+     * @param $url
+     * @param $params
+     *
+     * @return 
+     */
+    public function curlPost($url, $params=[], $headers=[]) 
+    {
+        if ( !is_array($params) ) return false;
+        $curl = new \Curl\Curl();
+        if ( !empty($headers) ) {
+            foreach($headers as $key=>$val) $curl->setHeader($key, $val);
+        }
+        $curl->post($url, $params);
+
+        $DI = \phalcon\DI\FactoryDefault::getDefault();
+        if ($curl->error) {
+            $curl->error_code;
+            $msg = sprintf("POST curl %s failed, error_code: %s, params : %s, Request Headers: %s", $url, $curl->error_code, json_encode($params), json_encode($curl->request_headers));
+            $DI->getLogger('CLI_CURL_ERROR')->log($msg);
+        } else {
+            $body = $curl->response;
+            $msg = sprintf("POST %s SUCCESSED, params : %s,  response: %s,  Request Headers: %s, Response Headers: %s", $url, json_encode($params), $body, json_encode($curl->request_headers), json_encode($curl->response_headers));
+            $DI->getLogger('CLI_CURL_DEBUG')->log($msg);
+        }
+        $curl->close();
+        return isset($body) ? $body : false;
+    }
+
+
+    /**
+     * auth: herry
+     * 验证中文字符串长度
+     * @param $str
+     * @return int
+     */
+    public function absLength($str)
+    {
+        if(empty($str)){
+            return 0;
+        }
+        if(function_exists('mb_strlen')){
+            return mb_strlen($str,'utf-8');
+        }
+        else {
+            preg_match_all("/./u", $str, $ar);
+            return count($ar[0]);
+        }
+    }
 
 }

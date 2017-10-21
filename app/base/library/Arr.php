@@ -7,7 +7,7 @@
  * @date 2016-11-08
  */
 
-namespace App\Library;
+namespace App\Base\Library;
 
 class Arr
 {

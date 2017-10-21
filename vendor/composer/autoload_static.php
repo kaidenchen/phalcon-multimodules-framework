@@ -6,26 +6,106 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitd3de86ed5321e3e0eb40452551f56a52
 {
+    public static $files = array (
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
+        'd' => 
+        array (
+            'duncan3dc\\Phpexcel\\' => 19,
+            'duncan3dc\\PhpexcelTests\\' => 24,
+        ),
+        'V' => 
+        array (
+            'Violin\\' => 7,
+        ),
+        'S' => 
+        array (
+            'Sid\\Phalcon\\AuthMiddleware\\' => 27,
+        ),
         'P' => 
         array (
+            'Psr\\Http\\Message\\' => 17,
             'Predis\\' => 7,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
+        ),
+        'A' => 
+        array (
+            'AliyunMNS\\' => 10,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'duncan3dc\\Phpexcel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/duncan3dc/phpexcel/src',
+        ),
+        'duncan3dc\\PhpexcelTests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/duncan3dc/phpexcel/tests',
+        ),
+        'Violin\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/alexgarrett/violin/src',
+        ),
+        'Sid\\Phalcon\\AuthMiddleware\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sidroberts/phalcon-authmiddleware/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'Predis\\' => 
         array (
             0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'AliyunMNS\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jinchun/aliyun-mns/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'PHPExcel' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
+            ),
+        ),
         'M' => 
         array (
             'Monolog' => 
             array (
                 0 => __DIR__ . '/..' . '/monolog/monolog/src',
+            ),
+        ),
+        'C' => 
+        array (
+            'Curl' => 
+            array (
+                0 => __DIR__ . '/..' . '/curl/curl/src',
             ),
         ),
     );

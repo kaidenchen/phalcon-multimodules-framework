@@ -46,22 +46,13 @@ $di->setShared('session', function () {
 */
 $di->setShared('dispatcher', function() use ($di) {
     $eventsManager = $di->getShared('eventsManager');
-    $eventsManager->attach('dispatch:beforeExecuteRoute', function($event, $dispatcher) use ($di) {
-        $contentType = $di->getRequest()->getHeader('Content-Type');
-        switch ($contentType) {
-            case 'application/json':
-            case 'application/json;charset=UTF-8':
-                $jsonRawBody = $di->getRequest()->getJsonRawBody(true);
-                if ($jsonRawBody && $di->getRequest()->isPost()) {
-                    $_POST = $jsonRawBody;
-                }
-                break;
-        }
-    });
+    $eventsManager->attach('dispatch:beforeExecuteRoute',  new \Sid\Phalcon\AuthMiddleware\Event());
+
     $dispatcher = new Phalcon\Mvc\Dispatcher();
     $dispatcher->setEventsManager($eventsManager);
     return $dispatcher;
 });
+
 
 /**
  * 
@@ -82,3 +73,4 @@ $di->set('modelsCache', function () {
     $cache = new Phalcon\Cache\Backend\Redis($frontCache, $backendConfig);
     return $cache;
 });
+

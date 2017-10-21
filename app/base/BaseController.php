@@ -10,84 +10,24 @@
 namespace App;
 
 use Phalcon\Mvc\Controller;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Regex;
-use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\PresenceOf;
+
+use Violin\Violin;
 
 class BaseController extends Controller
 {
-    protected $success;
-    protected $code;
-    protected $msg;
-    protected $data;
+    use \App\ResponseTrait;
 
-    /**
-     * @brief rspJson
-     *
-     * @param $code
-     * @param $data
-     *
-     * @return
-     */
-    public function rspJson( $code, $data = [], $message='')
+    public function initialize()
     {
-        $this->code = $code;
-        if ( $this->code == '-1') {
-            $this->success = false;
-            $this->msg = $message;
-            $this->data = [];
-        } else {
-            if ( $code == '9999' || preg_match('/\D+/', $code, $matches)) {
-                $this->success = false;
-                if ( ! empty($matches) ) {
-                    $this->code = '9999';
-                    $this->msg = $code;
-                } else {
-                    $this->msg = '请求失败';
-                }
-                $this->data = [];
-            } elseif ( $code != '0000' ) {
-                $this->success = false;
-                $this->msg = $this->config->errCode->$code;
-                $this->data = [];
-            } else {
-                $this->success = true;
-                $this->msg = '请求成功' ;
-                $this->data = $data;
-            }
+        //  Key-Auth 验证
+        $apiKeyList = $this->config['apiKeyList']->toArray();
+        $apiKey = $this->request->getHeader('apikey');
+        if ( ! $apiKey ) {
+            $this->rspJson('0001');
         }
-        $this->response->setContentType('application/json', 'UTF-8');
-        $content = [
-                    'success' => $this->success,
-                    'code' => $this->code,
-                    'msg' => $this->msg,
-                    'data' => $this->data
-                ];
-        $this->response->setJsonContent($content);
-        $this->response->send();
-
-        /**
-         * API调试模式打开后， 会记录每个request和response数据到日志中
-         */
-        if ( $this->config->apiDebug ) {
-            $request = [];
-            $request['URI'] = $this->request->getURI();
-            $request['ClientIP'] = $this->request->getClientAddress();
-            $request['UserAgent'] = $this->request->getUserAgent();
-            if ( $this->request->isPost() ) {
-                $request['PostParams'] = $this->request->getPost();
-            } elseif ( $this->request->isGet() ) {
-                $request['GetParams'] = $this->request->getQuery();
-            }
-
-            $info = [];
-            $info['request'] = $request;
-            $info['response'] = $content;
-            $this->getDI()->getLogger('API')->log(json_encode($info));
-            unset($info, $request, $response);
+        if ( ! in_array($apiKey, $apiKeyList) ) {
+            $this->rspJson('0001');
         }
-        exit();
     }
 
     /**
@@ -97,32 +37,34 @@ class BaseController extends Controller
      */
     public function notFoundAction()
     {
-        // 发送一个HTTP 404 响应的header
-        $this->response->setStatusCode(404, "Not Found");
+        $this->rspJson->setRet('200');
+        $this->rspJson->output();
     }
 
     /**
      * @brief post
+     * 获取POST数据
      *
      * @param $param
      *
      * @return
      */
-    public function post($params)
+    public function getPost($params)
     {
-        return $this->_chk_params('getPost', $params);
+        return $this->checkParams('getPost', $params);
     }
 
     /**
      * @brief get
+     * 获取GET数据
      *
      * @param $params
      *
      * @return
      */
-    public function get($params)
+    public function getQuery($params)
     {
-        return $this->_chk_params('getQuery', $params);
+        return $this->checkParams('getQuery', $params);
     }
 
     /**
@@ -134,106 +76,77 @@ class BaseController extends Controller
      */
     public function get_post($params)
     {
-        $getData = $this->_chk_params('getQuery',$params);
-        $postData = $this->_chk_params('getPost',$params);
-        $return  = [];
-        foreach($getData as $k=>$v) {
-            if ( isset($postData[$k]) && $postData[$k] ) {
-                $tmp = $postData[$k];
-            } else {
-                $tmp = $v;
-            }
-            $return[$k] = $tmp;
-        }
+        $getData = $this->checkParams('getQuery',$params);
+        $postData = $this->checkParams('getPost',$params);
+        $return = array_merge($getData, $postData);
         return $return;
     }
 
     /**
-     * @brief _chk_params 参数处理
+     * @brief checkParams 参数处理
      *
      * @param $requestMethod
      * @param $params
      *
      * @return
      */
-    public function _chk_params($requestMethod, $params)
+    public function checkParams($requestMethod, $params)
     {
         if ( empty($params) || !is_array($params) ) {
             return false;
         }
-        $return = [];
-        foreach($params as $k=>&$v) {
+        $return = $validateRules = $defaultParams = [];
+
+        // 获取参数并验证规则
+        foreach($params as $k=>$v) {
             $field = $v[0];
-            $filter = isset($v[1]) ? $v[1] : null;
-            $default = isset($v[2]) ? $v[2] : '';
-            $value = $this->request->$requestMethod($field, $filter, $default);
-            // if ( ! $value ) {
-                // continue;
-            // }
-            $return[$field] = $value;
-        }
-        return $return;
-    }
-
-    /**
-     * auth:herry
-     * @params array $arr post或者get提交的数据（一维数组）
-     * @params string $field 数组中某个键名（也就是验证的字段名）
-     * @params string $msg 错误提示信息
-     * 参数验证
-     */
-    public function isEmptyField($arr,$field,$msg){
-        $validation = new Validation();
-
-        $validation->add(
-            "$field",
-            new PresenceOf(
-                [
-                    "message" => "$msg",
-                ]
-            )
-        );
-        switch($field){
-            case 'email':
-                $validation->add("email", new Email(["message" => "邮箱格式错误",]));
-                break;
-            case 'telephone':
-                $validation->add("telephone", new Regex(["message" => "手机格式错误", "pattern" => "/^(1(([35][0-9])|(47)|[8][0126789]))\d{8}$/",]));
-                break;
-            case 'user_id':
-                $validation->add("user_id", new Regex(["message" => "会员ID格式错误", "pattern" => "/^[0-9]*$/",]));
-                break;
-
-        }
-        $messages = $validation->validate($arr);
-
-        if (count($messages)) {
-            foreach ($messages as $message) {
-                $this->rspJson('-1',null, "$message");
-                //echo $message, "<br>";
+            $value = $this->request->$requestMethod($field);
+            if ( is_null($value) || $value == '' ) {
+                if ( isset($v['default']) )  $defaultParams[$field] = $v['default'];
+            } 
+            $return[$field] = (!is_array($value)&&!is_object($value))?rtrim($value):$value;
+            if ( isset($v['rules']) ) {
+                $validateRules[$field] = [ $value, $v['rules'] ];
             }
         }
+        $return = array_filter($return, function($v, $k) {
+                        return !(is_null($v) || $v == '');
+                    }, ARRAY_FILTER_USE_BOTH );
+        if ( ! empty($validateRules) ) {
+            $this->validate($validateRules);
+        }
+        return array_merge($return, $defaultParams);
     }
 
     /**
-     * auth: herry
-     * 验证中文字符串长度
-     * @param $str
-     * @return int
+     * @brief validate 
+     * 参数校验
+     *
+     * @param $rules
+     *
+     * @return 
      */
-    public function abslength($str)
+    public function validate($validateRules)
     {
-        if(empty($str)){
-            return 0;
+        if (empty($validateRules) ) return true;
+        $v = new Violin();
+        $v->addRuleMessages([
+                'required' => '参数{field}是必填项.',
+                'int'      => '参数{field}必须是整数',
+                'alnum' => '参数{field}必须是字母或者数字',
+                'regex' => '参数{field}格式不对',
+                'min' => '参数{field}小于规定的长度',
+                'max' => '参数{field}超出长度',
+                'url' => '参数{field}不是URL',
+                'array' => '参数{field}应该为URL数组',
+                'date' => '参数{field}格式不正确',
+                ]);
+        $v->validate($validateRules);
+        if(!$v->passes()) {
+            $msg = $v->errors()->first();
+            $this->rspJson('-1', null, $msg);
         }
-        if(function_exists('mb_strlen')){
-            return mb_strlen($str,'utf-8');
-        }
-        else {
-            preg_match_all("/./u", $str, $ar);
-            return count($ar[0]);
-        }
+        return true;
     }
-
 
 }

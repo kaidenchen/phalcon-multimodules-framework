@@ -6,5 +6,14 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'duncan3dc\\Phpexcel\\' => array($vendorDir . '/duncan3dc/phpexcel/src'),
+    'duncan3dc\\PhpexcelTests\\' => array($vendorDir . '/duncan3dc/phpexcel/tests'),
+    'Violin\\' => array($vendorDir . '/alexgarrett/violin/src'),
+    'Sid\\Phalcon\\AuthMiddleware\\' => array($vendorDir . '/sidroberts/phalcon-authmiddleware/src'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Predis\\' => array($vendorDir . '/predis/predis/src'),
+    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
+    'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
+    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
+    'AliyunMNS\\' => array($vendorDir . '/jinchun/aliyun-mns/src'),
 );

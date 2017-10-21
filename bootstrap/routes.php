@@ -20,14 +20,7 @@ return [
 		'label' => '前台默认路由', 
 		'namespace' => 'App\Home\Controllers',
 		'list' => [
-			['label'=>'index', 'url'=>'home/index/index', 'action'=>'home/index/index', 'display'=>true, 'ver'=> 1.0],
-		]
-	],
-	'admin' => [
-		'label' => '后台默认路由', 
-		'namespace' => 'App\Admin\Controllers',
-		'list' => [
-			['label'=>'index', 'url'=>'admin/index/index', 'action'=>'admin/index/index', 'display'=>true, 'ver'=> 1.0],
+			['label'=>'index', 'url'=>'home/index/index', 'disable'=>true],
 		]
 	],
 ];
