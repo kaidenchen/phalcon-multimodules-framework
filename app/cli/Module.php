@@ -18,6 +18,8 @@ class Module implements ModuleDefinitionInterface
 
         $loader->registerNamespaces([
             'App\Cli\Tasks' => __DIR__ . '/tasks/',
+            'App\Index\Models'      => APP_PATH . '/index/models/',
+            'App\Index\Services'      => APP_PATH . '/index/services/' 
         ]);
 
         $loader->register();

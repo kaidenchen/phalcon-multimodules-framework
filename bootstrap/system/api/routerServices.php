@@ -8,14 +8,15 @@ foreach($routerList as &$routerItem){
 		foreach($routerItem['list'] as &$item) {
 			if(isset($item['disable']) && $item['disable']){
                 $url = $item['url'];
-				$action = explode('/', $url);
+				$action = explode('/', $item['action']);
 				$router->add( '/'.$url,[
 						'namespace'  => $routerItem['namespace'],
 						'module'     => (isset($action[0]) ? $action[0] : ''),
 						'controller' => (isset($action[1]) ? $action[1] : ''),
-						'action'     => (isset($action[2]) ? $action[2] : '')
+						'action'     => (isset($action[2]) ? $action[2] : ''),
+						'params'     => (isset($action[3]) ? $action[3] : '')
 					]
-				);	
+				);
 			}
 		}
 	}

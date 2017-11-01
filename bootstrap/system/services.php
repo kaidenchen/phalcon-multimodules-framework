@@ -2,7 +2,9 @@
 defined('BASE_PATH') OR exit('No direct script access allowed'); 
 
 use Phalcon\Loader;
-use Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter;
+use Phalcon\Mvc\Model\Metadata\Files as MetaDataAdapter;
+use Phalcon\Mvc\Model\MetaData\Strategy\Annotations as StrategyAnnotations;
+
 
 
 /**
@@ -64,10 +66,12 @@ $di->setShared('db', function () use ($di) {
     $class = 'Phalcon\Db\Adapter\Pdo\\' . $config->database->adapter;
     $connection = new $class([
         'host'     => $config->database->host,
+        'port'     => $config->database->port,
         'username' => $config->database->username,
         'password' => $config->database->password,
         'dbname'   => $config->database->dbname,
-        'charset'  => $config->database->charset
+        'charset'  => $config->database->charset,
+        'options' => [PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC],
     ]);
 
     $connection->setEventsManager($eventsManager);
@@ -78,7 +82,9 @@ $di->setShared('db', function () use ($di) {
  * If the configuration specify the use of metadata adapter use it or use memory otherwise
  */
 $di->setShared('modelsMetadata', function () {
-    return new MetaDataAdapter();
+    $metaData = new MetaDataAdapter( [ 'metaDataDir' => DATA_PATH . '/cache/metadata/', 'prefix' => 'tb_' , 'lifetime' => 86400 ] );
+    $metaData->setStrategy( new StrategyAnnotations());
+    return $metaData;
 });
 
 /**

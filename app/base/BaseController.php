@@ -7,7 +7,7 @@
  * @date 2016-10-27
  */
 
-namespace App;
+namespace App\Base;
 
 use Phalcon\Mvc\Controller;
 
@@ -15,11 +15,12 @@ use Violin\Violin;
 
 class BaseController extends Controller
 {
-    use \App\ResponseTrait;
+    use \App\Base\ResponseTrait;
 
     public function initialize()
     {
         //  Key-Auth 验证
+        /*
         $apiKeyList = $this->config['apiKeyList']->toArray();
         $apiKey = $this->request->getHeader('apikey');
         if ( ! $apiKey ) {
@@ -28,6 +29,7 @@ class BaseController extends Controller
         if ( ! in_array($apiKey, $apiKeyList) ) {
             $this->rspJson('0001');
         }
+        */
     }
 
     /**
@@ -68,21 +70,6 @@ class BaseController extends Controller
     }
 
     /**
-     * @brief get_post GET/POST数据合并
-     *
-     * @param $params
-     *
-     * @return
-     */
-    public function get_post($params)
-    {
-        $getData = $this->checkParams('getQuery',$params);
-        $postData = $this->checkParams('getPost',$params);
-        $return = array_merge($getData, $postData);
-        return $return;
-    }
-
-    /**
      * @brief checkParams 参数处理
      *
      * @param $requestMethod
@@ -97,13 +84,14 @@ class BaseController extends Controller
         }
         $return = $validateRules = $defaultParams = [];
 
-        // 获取参数并验证规则
+        // 获取并过滤参数且验证规则
         foreach($params as $k=>$v) {
             $field = $v[0];
-            $value = $this->request->$requestMethod($field);
+            $filter = isset($v['filter']) ? $v['filter'] : 'trim';
+            $value = $this->request->$requestMethod($field, $filter);
             if ( is_null($value) || $value == '' ) {
                 if ( isset($v['default']) )  $defaultParams[$field] = $v['default'];
-            } 
+            }
             $return[$field] = (!is_array($value)&&!is_object($value))?rtrim($value):$value;
             if ( isset($v['rules']) ) {
                 $validateRules[$field] = [ $value, $v['rules'] ];
@@ -119,32 +107,21 @@ class BaseController extends Controller
     }
 
     /**
-     * @brief validate 
+     * @brief validate
      * 参数校验
      *
      * @param $rules
      *
-     * @return 
+     * @return
      */
     public function validate($validateRules)
     {
         if (empty($validateRules) ) return true;
-        $v = new Violin();
-        $v->addRuleMessages([
-                'required' => '参数{field}是必填项.',
-                'int'      => '参数{field}必须是整数',
-                'alnum' => '参数{field}必须是字母或者数字',
-                'regex' => '参数{field}格式不对',
-                'min' => '参数{field}小于规定的长度',
-                'max' => '参数{field}超出长度',
-                'url' => '参数{field}不是URL',
-                'array' => '参数{field}应该为URL数组',
-                'date' => '参数{field}格式不正确',
-                ]);
+        $v = $this->di->getValidator();
         $v->validate($validateRules);
         if(!$v->passes()) {
             $msg = $v->errors()->first();
-            $this->rspJson('-1', null, $msg);
+            $this->rspJson('0002', null, $msg);
         }
         return true;
     }

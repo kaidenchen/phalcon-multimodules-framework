@@ -3,8 +3,6 @@
 use Phalcon\Di\FactoryDefault\Cli as FactoryDefault;
 use Phalcon\Cli\Console as ConsoleApp;
 
-ini_set('date.timezone', 'Asia/Shanghai');
-
 /**
  * The FactoryDefault Dependency Injector automatically registers the services that
  * provide a full stack framework. These default services can be overidden with custom ones.
@@ -29,19 +27,9 @@ $config = $di->getConfig();
 
 
 /**
- * Register console modules
+ * Auto register
  */
-$moduleSettings = [ 'cli' => ['className' => 'App\Cli\Module', 'path' => APP_PATH .'/cli/Module.php'] ];
-
-foreach($moduleSettings as $key=>$val) {
-    $registerClasses[$val['className']] = $val['path'];
-    $registerModules[$key] = ['className' => $val['className']];
-}
-
-/**
- * Include Autoloader
- */
-include BOOTSTRAP_PATH . '/loader.php';
+require BOOTSTRAP_PATH . '/loader.php';
 
 /**
  * Create a console application

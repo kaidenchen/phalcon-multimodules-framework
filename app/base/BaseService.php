@@ -7,30 +7,32 @@
  * @date 2016-10-27
  */
 
-namespace App;
+namespace App\Base;
 
 use Phalcon\Di;
 
-class BaseService 
+class BaseService
 {
+    use \App\Base\ResponseTrait;
+
     protected $di;
     protected $data = [];
 
 
     public function __construct()
     {
-        $this->di = Di::getDefault(); 
+        $this->di = Di::getDefault();
     }
 
     /**
-     * @brief __set 
+     * @brief __set
      *
      * @param $name
      * @param $value
      *
-     * @return 
+     * @return
      */
-    public function __set($name, $value) 
+    public function __set($name, $value)
     {
         if ( $name == 'attributes' ) {
             $this->setAttributes($value);
@@ -40,11 +42,11 @@ class BaseService
     }
 
     /**
-     * @brief __get 
+     * @brief __get
      *
      * @param $name
      *
-     * @return 
+     * @return
      */
     public function __get($name)
     {
@@ -60,13 +62,13 @@ class BaseService
     }
 
     /**
-     * @brief setAttributes 
+     * @brief setAttributes
      *
      * @param $values
      *
-     * @return 
+     * @return
      */
-    public function setAttributes($values) 
+    public function setAttributes($values)
     {
         if ( ! is_array($values) ) {
             return ;
@@ -77,7 +79,7 @@ class BaseService
     }
 
     /**
-     * @brief 
+     * @brief
      */
     public function getAttributes()
     {

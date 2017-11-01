@@ -2,15 +2,15 @@
 
 namespace App\Base\Library;
 
-class Utils 
+class Utils
 {
 
     /**
-     * @brief dbExecInfo 
+     * @brief dbExecInfo
      *
-     * @return 
+     * @return
      */
-    public function getSqls( $bTime = false ) 
+    public function getSqls( $bTime = false )
     {
         $DI = \phalcon\DI\FactoryDefault::getDefault();
 
@@ -26,63 +26,66 @@ class Utils
         return true;
     }
 
-    /**                                
-     * @brief dd 打印调试函数          
-     *                                 
-     * @param $data                    
-     *                                 
-     * @return                         
-     */                                
-    public function dd($data) 
-    {                                  
-        echo "<pre>";                  
-        print_r($data);                
-        echo "</pre>";                 
-        if ( is_array($data) ) {       
-            $data = json_encode($data);
-        }                              
-        error_log($data);              
-        die;                           
-    }                                  
+    /**
+     * @brief dd 打印调试函数
+     *
+     * @param $data
+     *
+     * @return
+     */
+    public function dd(...$data)
+    {
+        foreach ($data as $value) {
+            echo "<pre>";
+            print_r($value);
+            echo "</pre>";
+            if ( !is_string($value) ) {
+                $value = json_encode($value,true);
+            }
+            error_log($value);
+        }
+        die;
+    }
 
     /**
-     * @brief curlGet 
+     * @brief curlGet
      *
      * @param $url
      * @param $params
      *
-     * @return 
+     * @return
      */
-    public function curlGet($url, $params=[], $headers=[]) 
+    public function curlGet($url, $params=[], $headers=[])
     {
         if ( !is_array($params) ) return false;
         $curl = new \Curl\Curl();
         if ( !empty($headers) ) {
             foreach($headers as $key=>$val) $curl->setHeader($key, $val);
         }
+        $DI = \phalcon\DI\FactoryDefault::getDefault();
         $curl->get($url, $params);
         if ($curl->error) {
             $curl->error_code;
             $msg = sprintf("GET curl %s failed, error_code: %s, params : %s, Request Headers: %s", $url, $curl->error_code, json_encode($params), json_encode($curl->request_headers));
-            $this->getDI()->getLogger('CLI_CURL_ERROR')->log($msg);
+            $DI->getLogger('CLI_CURL_ERROR')->log($msg);
         } else {
             $body = $curl->response;
             $msg = sprintf("POST %s SUCCESSED, params : %s,  response: %s,  Request Headers: %s, Response Headers: %s", $url, json_encode($params), $body, json_encode($curl->request_headers), json_encode($curl->response_headers));
-            $this->getDI()->getLogger('CLI_CURL_DEBUG')->log($msg);
+            $DI->getLogger('CLI_CURL_DEBUG')->log($msg);
         }
         $curl->close();
         return isset($body) ? $body : false;
     }
 
     /**
-     * @brief post 
+     * @brief post
      *
      * @param $url
      * @param $params
      *
-     * @return 
+     * @return
      */
-    public function curlPost($url, $params=[], $headers=[]) 
+    public function curlPost($url, $params=[], $headers=[])
     {
         if ( !is_array($params) ) return false;
         $curl = new \Curl\Curl();

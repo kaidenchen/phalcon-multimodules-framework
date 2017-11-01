@@ -1,5 +1,5 @@
 <?php
-defined('BASE_PATH') OR exit('No direct script access allowed'); 
+defined('BASE_PATH') OR exit('No direct script access allowed');
 
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Router;
@@ -64,9 +64,9 @@ $di->setShared('dispatcher', function() use ($di) {
 });
 
 /**
- * 
+ *
  * 设置模型缓存服务
- */ 
+ */
 $di->set('modelsCache', function () {
     // 默认缓存时间为一天
     $frontCache = new Phalcon\Cache\Frontend\Data( [ "lifetime" => 86400 ] );
@@ -93,7 +93,7 @@ $di->setShared('voltShared', function ($view) {
     $volt->setOptions([
         'compiledPath' => function($templatePath) use ($config) {
             // Makes the view path into a portable fragment
-            $templateFrag = str_replace($config->application->appDir, '', $templatePath); 
+            $templateFrag = str_replace($config->application->appDir, '', $templatePath);
 
             // Replace '/' with a safe '%%'
             $templateFrag = str_replace('/', '%%', $templateFrag);

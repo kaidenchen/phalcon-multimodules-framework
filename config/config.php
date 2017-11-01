@@ -1,18 +1,19 @@
 <?php
-defined('BASE_PATH') OR exit('No direct script access allowed'); 
+defined('BASE_PATH') OR exit('No direct script access allowed');
 
-return new \Phalcon\Config([
-    'version' => '1.0',
+return new \Phalcon\Config([ 'version' => '1.0',
 
     /**
      * SQL statement调试语句记录, data/logs/DB****.log中
      */
-    'sqlDebug' => true, 
+    'sqlDebug' => true,
 
     /**
      * 请求URL和参数、返回值打印至data/logs/API***.log中
      */
-    'apiDebug' => true, 
+    'apiDebug' => true,
+
+    'exceptionDebug' => true,
 
     'application' => [
         'appDir'         => APP_PATH . '/',
@@ -20,6 +21,7 @@ return new \Phalcon\Config([
         'LibarayDir'      => APP_PATH . '/base/library/',
         'migrationsDir'  => APP_PATH . '/migrations/',
         'cacheDir'       => BASE_PATH . '/data/cache/',
+        'baseDir'        => APP_PATH . '/base/',
         'baseUri'        => '/'
     ],
 
@@ -30,6 +32,9 @@ return new \Phalcon\Config([
         'utils' => 'App\Base\Library\Utils',
         'arr' => 'App\Base\Library\Arr',
         'rspJson' => 'App\Base\Library\RspJson',
+        'gid' => 'App\Base\Library\Gid',
+        'time' => 'App\Base\Library\Time',
+        'validator' => 'App\Base\Library\Validator',
     ],
 
 
@@ -44,6 +49,7 @@ return new \Phalcon\Config([
      */
     'printNewLine' => true,
 
-    'apiKeyList' => [ '123', 'abc' ],
+    'apiKeyList' => [ 
+                    ],
 
 ]);

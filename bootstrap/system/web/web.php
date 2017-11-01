@@ -30,17 +30,9 @@ try {
     $config = $di->getConfig();
 
     /**
-     * Handle Modules settings
+     * Auto register
      */
-    foreach($config->moduleSettings as $key=>$val) {
-        $registerClasses[$val->className] = $val->path;
-        $registerModules[$key] = ['className' => $val->className];
-    }
-
-    /**
-     * Include Phalcon Autoloader
-     */
-    include BOOTSTRAP_PATH . '/loader.php';
+    require BOOTSTRAP_PATH . '/loader.php';
 
     /**
      * Handle the request

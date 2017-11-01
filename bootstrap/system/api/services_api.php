@@ -8,6 +8,8 @@ use Phalcon\Session\Adapter\Files as SessionAdapter;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Flash\Direct as Flash;
+use Phalcon\Events\Event;
+use Phalcon\Mvc\Dispatcher\Exception as DispatchException;
 use App\Utils;
 
 /**
@@ -47,7 +49,7 @@ $di->setShared('session', function () {
 $di->setShared('dispatcher', function() use ($di) {
     $eventsManager = $di->getShared('eventsManager');
     $eventsManager->attach('dispatch:beforeExecuteRoute',  new \Sid\Phalcon\AuthMiddleware\Event());
-
+    $eventsManager->attach('dispatch:beforeException', new \App\Base\Plugins\ExceptionPlugin());
     $dispatcher = new Phalcon\Mvc\Dispatcher();
     $dispatcher->setEventsManager($eventsManager);
     return $dispatcher;
